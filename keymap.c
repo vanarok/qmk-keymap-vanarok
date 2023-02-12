@@ -1,9 +1,11 @@
 #include QMK_KEYBOARD_H
-#include <stdio.h>
-#include <stdint.h>
 
 #define CUSTOM_SAFE_RANGE SAFE_RANGE
 #include "lang_shift/include.h"
+
+#include <stdio.h>
+#include <stdint.h>
+
 
 #define L_BASE 0
 #define L_LOWER 2
@@ -36,7 +38,7 @@
 #define H_LPRN TD(SFT_LP)
 #define H_RPRN TD(CTL_RP)
 #define H_QUOT TD(GUI_QT)
-#define H_COLN TD(ALT_CL)
+#define H_COLN TD(KC_LALT)
 
 
 // Cursor layer
@@ -54,10 +56,10 @@
 // Layer keys
 #define CUR_SPC LT(L_CUR, KC_SPC)
 #define SYM_ENT LT(L_SYM, KC_ENT)
-#define SPEC_PSCR LT(L_SPEC, KC_PSCR)
 
 enum custom_keycodes {
     KEYCODES_START = CUSTOM_SAFE_RANGE,
+
     CTL_PGU,
     CTL_PGD,
 };
@@ -102,8 +104,6 @@ void ctlrp_finished(qk_tap_dance_state_t *state, void *user_data);
 void ctlrp_reset(qk_tap_dance_state_t *state, void *user_data);
 void guiqt_finished(qk_tap_dance_state_t *state, void *user_data);
 void guiqt_reset(qk_tap_dance_state_t *state, void *user_data);
-void altcl_finished(qk_tap_dance_state_t *state, void *user_data);
-void altcl_reset(qk_tap_dance_state_t *state, void *user_data);
 
 #define TG_GAME TG(L_GAME)
 #define MO_GAME_CUR MO(L_GAME_CUR)
@@ -117,18 +117,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
       XXXXXXX, AG_COMM,    KC_M,  AG_DOT,    KC_J, AG_SCLN,                         KC_G,    KC_L,    KC_P,    KC_V, KC_LBRC, XXXXXXX,
   //|--------+--------+--------+--------+--------+--------+--------|  |--------+--------+--------+--------+--------+--------+--------|
-                                          XXXXXXX, KC_TAB, SYM_ENT,   CUR_SPC, SPEC_PSCR,  KC_CAPS
-                                      //`--------------------------'  `--------------------------'
-  ),
-  [L_SPEC] = LAYOUT_split_3x6_3(
-  //,-----------------------------------------------------.                    ,-----------------------------------------------------.
-      XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,                      XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,
-  //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
-      XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,                      XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,
-  //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
-      XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,                      XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,
-  //|--------+--------+--------+--------+--------+--------+--------|  |--------+--------+--------+--------+--------+--------+--------|
-                                          XXXXXXX, XXXXXXX, XXXXXXX,  XXXXXXX,   XXXXXXX,    XXXXXXX
+                                          XXXXXXX, KC_TAB, SYM_ENT,   CUR_SPC, KC_PSCR,  KC_CAPS
                                       //`--------------------------'  `--------------------------'
   ),
   [L_CUR] = LAYOUT_split_3x6_3(
@@ -139,18 +128,18 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
       XXXXXXX, XXXXXXX, XXXXXXX, CTL_PGU, CTL_PGD, XXXXXXX,                      XXXXXXX,    AG_7,    AG_8,    AG_9, XXXXXXX, XXXXXXX,
   //|--------+--------+--------+--------+--------+--------+--------|  |--------+--------+--------+--------+--------+--------+--------|
-                                           XXXXXXX, KC_ESC, SYM_ENT,  SPEC_PSCR,   XXXXXXX,    XXXXXXX
+                                           KC_TRNS, KC_ESC, KC_TRNS,  KC_TRNS, KC_TRNS,  KC_TRNS
                                       //`--------------------------'  `--------------------------'
   ),
   [L_SYM] = LAYOUT_split_3x6_3(
   //,-----------------------------------------------------.                    ,-----------------------------------------------------.
       XXXXXXX, AG_DQUO, AG_UNDS, EN_LBRC, EN_RBRC, EN_CIRC,                      AG_EXCL,   EN_LT,   EN_GT,  AG_EQL, EN_AMPR, XXXXXXX,
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
-      XXXXXXX, H_SLSH,  H_MINS,  H_LCBR,  H_RCBR,  AG_ASTR,                      AG_QUES,   H_LPRN, H_RPRN,  H_QUOT,  H_COLN, XXXXXXX,
+      XXXXXXX, H_SLSH,  H_MINS,  H_LCBR,  H_RCBR,  AG_ASTR,                      AG_QUES,   H_LPRN, H_RPRN,  H_QUOT,  H_COLN, KC_TRNS,
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
       XXXXXXX, EN_HASH,  EN_DLR, EN_PIPE, EN_TILD,  EN_GRV,                      AG_PLUS, AG_PERC, AG_BSLS,   EN_AT, XXXXXXX, XXXXXXX,
   //|--------+--------+--------+--------+--------+--------+--------|  |--------+--------+--------+--------+--------+--------+--------|
-                                        XXXXXXX, XXXXXXX, SPEC_PSCR,  CUR_SPC,   XXXXXXX, XXXXXXX
+                                          KC_TRNS, KC_TRNS, KC_TRNS,  KC_TRNS, KC_TRNS, KC_TRNS
                                       //`--------------------------'  `--------------------------'
   ),
   [L_GAME] = LAYOUT_split_3x6_3(
@@ -161,7 +150,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
       XXXXXXX, AG_COMM,    KC_M,  AG_DOT,    KC_J, AG_SCLN,                         KC_G,    KC_L,    KC_P,    KC_V, KC_LBRC, XXXXXXX,
   //|--------+--------+--------+--------+--------+--------+--------|  |--------+--------+--------+--------+--------+--------+--------|
-                                          XXXXXXX, KC_TAB, SYM_ENT,   MO_GAME_CUR, SPEC_PSCR, KC_CAPS
+                                          XXXXXXX, KC_TAB, SYM_ENT,   MO_GAME_CUR, KC_PSCR, KC_CAPS
                                       //`--------------------------'  `--------------------------'
   ),
   [L_GAME_CUR] = LAYOUT_split_3x6_3(
@@ -287,40 +276,6 @@ void guiqt_reset(qk_tap_dance_state_t *state, void *user_data) {
             break;
         case TD_DOUBLE_SINGLE_TAP:
             unregister_code16(KC_QUOT);
-            break;
-        default:
-            break;
-    }
-}
-
-void altcl_finished(qk_tap_dance_state_t *state, void *user_data) {
-    td_state = cur_dance(state);
-    switch (td_state) {
-        case TD_SINGLE_TAP:
-//            register_code16(KC_COLN);
-            break;
-        case TD_SINGLE_HOLD:
-            register_mods(MOD_BIT(KC_LALT)); // For a layer-tap key, use `layer_on(_MY_LAYER)` here
-            break;
-        case TD_DOUBLE_SINGLE_TAP: // Allow nesting of 2 parens `((` within tapping term
-//            tap_code16(KC_COLN);
-//            register_code16(KC_COLN);
-            break;
-        default:
-            break;
-    }
-}
-
-void altcl_reset(qk_tap_dance_state_t *state, void *user_data) {
-    switch (td_state) {
-        case TD_SINGLE_TAP:
-            unregister_code16(KC_COLN);
-            break;
-        case TD_SINGLE_HOLD:
-            unregister_mods(MOD_BIT(KC_LALT)); // For a layer-tap key, use `layer_off(_MY_LAYER)` here
-            break;
-        case TD_DOUBLE_SINGLE_TAP:
-            unregister_code16(KC_COLN);
             break;
         default:
             break;
@@ -472,7 +427,6 @@ qk_tap_dance_action_t tap_dance_actions[] = {
     [SFT_LP] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, sftlp_finished, sftlp_reset), 
     [CTL_RP] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, ctlrp_finished, ctlrp_reset), 
     [GUI_QT] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, guiqt_finished, guiqt_reset), 
-    [ALT_CL] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, altcl_finished, altcl_reset)
 };
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
@@ -481,17 +435,17 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     switch (keycode) {
         case CTL_PGU:
             if (record->event.pressed) {
-                register_code(KC_LCTRL);
+                register_code(KC_LCTL);
                 register_code(KC_PGUP);
-                unregister_code(KC_LCTRL);
+                unregister_code(KC_LCTL);
                 unregister_code(KC_PGUP);
             }
             return false;
         case CTL_PGD:
             if (record->event.pressed) {
-                register_code(KC_LCTRL);
+                register_code(KC_LCTL);
                 register_code(KC_PGDN);
-                unregister_code(KC_LCTRL);
+                unregister_code(KC_LCTL);
                 unregister_code(KC_PGDN);
             }
             return false;

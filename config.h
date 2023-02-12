@@ -24,7 +24,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define TAPPING_FORCE_HOLD
 #define TAPPING_TERM 110
 
-#define LANG_CHANGE_DEFAULT LANG_CHANGE_ALT_SHIFT
+#define LANG_CHANGE_DEFAULT LANG_CHANGE_WIN_SPACE
 
 #ifndef NO_DEBUG
 	#define NO_DEBUG
