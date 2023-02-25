@@ -38,7 +38,7 @@
 #define H_LPRN TD(SFT_LP)
 #define H_RPRN TD(CTL_RP)
 #define H_QUOT TD(GUI_QT)
-#define H_COLN TD(KC_LALT)
+#define H_COLN LALT_T(KC_NO)
 
 
 // Cursor layer
@@ -146,7 +146,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //,-----------------------------------------------------.                    ,-----------------------------------------------------.
       TG_GAME,    KC_Q,    KC_F,    KC_U,    KC_Y,    KC_Z,                         KC_X,    KC_K,    KC_C,    KC_W,    KC_B, XXXXXXX,
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
-      KC_BSLS,    H_O,    H_H,      H_E,    H_A,    KC_I,                           KC_D,     H_R,    H_T,    H_N,       H_S, KC_RBRC,
+      KC_BSLS,    KC_O,    KC_H,    KC_E,    KC_A,    KC_I,                           KC_D,     H_R,    H_T,    H_N,     H_S, KC_RBRC,
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
       XXXXXXX, AG_COMM,    KC_M,  AG_DOT,    KC_J, AG_SCLN,                         KC_G,    KC_L,    KC_P,    KC_V, KC_LBRC, XXXXXXX,
   //|--------+--------+--------+--------+--------+--------+--------|  |--------+--------+--------+--------+--------+--------+--------|
