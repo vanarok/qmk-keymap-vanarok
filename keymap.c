@@ -6,12 +6,12 @@
 #include <stdint.h>
 
 #define L_BASE 0
-#define L_CUR 1
-#define L_SYM 2
-#define L_GAME 3
-#define L_GAME_CUR 4
+#define L_CUR 2
+#define L_SYM 5
+#define L_GAME 8
+#define L_GAME_CUR 10
 
-// English layer
+// Base layer
 #define H_O LALT_T(KC_O)
 #define H_H LGUI_T(KC_H)
 #define H_E LCTL_T(KC_E)
@@ -69,16 +69,10 @@ typedef enum { TD_NONE, TD_UNKNOWN, TD_SINGLE_TAP, TD_SINGLE_HOLD, TD_DOUBLE_SIN
 // Create a global instance of the tap-dance state type
 static td_state_t td_state;
 
-// Declare your tap-dance functions:
-
 // Function to determine the current tap-dance state
 td_state_t cur_dance(qk_tap_dance_state_t *state);
 
 // `finished` and `reset` functions for each tap-dance keycode
-void altsl_finished(qk_tap_dance_state_t *state, void *user_data);
-void altsl_reset(qk_tap_dance_state_t *state, void *user_data);
-void guimn_finished(qk_tap_dance_state_t *state, void *user_data);
-void guimn_reset(qk_tap_dance_state_t *state, void *user_data);
 void ctllb_finished(qk_tap_dance_state_t *state, void *user_data);
 void ctllb_reset(qk_tap_dance_state_t *state, void *user_data);
 void sftrb_finished(qk_tap_dance_state_t *state, void *user_data);
@@ -88,8 +82,6 @@ void sftlp_finished(qk_tap_dance_state_t *state, void *user_data);
 void sftlp_reset(qk_tap_dance_state_t *state, void *user_data);
 void ctlrp_finished(qk_tap_dance_state_t *state, void *user_data);
 void ctlrp_reset(qk_tap_dance_state_t *state, void *user_data);
-void guiqt_finished(qk_tap_dance_state_t *state, void *user_data);
-void guiqt_reset(qk_tap_dance_state_t *state, void *user_data);
 
 #define TG_GAME TG(L_GAME)
 #define MO_GAME_CUR MO(L_GAME_CUR)
@@ -152,6 +144,79 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   ),
 };
 
+oled_rotation_t oled_init_user(oled_rotation_t rotation) {
+    if (!is_keyboard_master()) {
+        return OLED_ROTATION_180; // flips the display 180 degrees if offhand
+    }
+    return rotation;
+}
+
+void oled_render_layer_state(void) {
+    oled_write_P(PSTR("Layer: "), false);
+    switch (layer_state) {
+        case L_BASE:
+            oled_write_ln_P(PSTR("Base"), false);
+            break;
+        case L_CUR:
+            oled_write_ln_P(PSTR("Cur"), false);
+            break;
+        case L_SYM:
+            oled_write_ln_P(PSTR("Sym"), false);
+            break;
+    }
+}
+
+char keylog_str[24] = {};
+
+const char code_to_name[60] = {' ', ' ', ' ', ' ', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', 'R', 'E', 'B', 'T', '_', '-', '=', '[', ']', '\\', '#', ';', '\'', '`', ',', '.', '/', ' ', ' ', ' '};
+
+void set_keylog(uint16_t keycode, keyrecord_t *record) {
+    char name = ' ';
+    if ((keycode >= QK_MOD_TAP && keycode <= QK_MOD_TAP_MAX) || (keycode >= QK_LAYER_TAP && keycode <= QK_LAYER_TAP_MAX)) {
+        keycode = keycode & 0xFF;
+    }
+    if (keycode < 60) {
+        name = code_to_name[keycode];
+    }
+
+    // update keylog
+    snprintf(keylog_str, sizeof(keylog_str), "%dx%d, k%2d : %c", record->event.key.row, record->event.key.col, keycode, name);
+}
+
+void oled_render_keylog(void) {
+    oled_write(keylog_str, false);
+}
+
+void render_bootmagic_status(bool status) {
+    /* Show Ctrl-Gui Swap options */
+    static const char PROGMEM logo[][2][3] = {
+        {{0x97, 0x98, 0}, {0xb7, 0xb8, 0}},
+        {{0x95, 0x96, 0}, {0xb5, 0xb6, 0}},
+    };
+    if (status) {
+        oled_write_ln_P(logo[0][0], false);
+        oled_write_ln_P(logo[0][1], false);
+    } else {
+        oled_write_ln_P(logo[1][0], false);
+        oled_write_ln_P(logo[1][1], false);
+    }
+}
+
+void oled_render_logo(void) {
+    static const char PROGMEM crkbd_logo[] = {0x80, 0x81, 0x82, 0x83, 0x84, 0x85, 0x86, 0x87, 0x88, 0x89, 0x8a, 0x8b, 0x8c, 0x8d, 0x8e, 0x8f, 0x90, 0x91, 0x92, 0x93, 0x94, 0xa0, 0xa1, 0xa2, 0xa3, 0xa4, 0xa5, 0xa6, 0xa7, 0xa8, 0xa9, 0xaa, 0xab, 0xac, 0xad, 0xae, 0xaf, 0xb0, 0xb1, 0xb2, 0xb3, 0xb4, 0xc0, 0xc1, 0xc2, 0xc3, 0xc4, 0xc5, 0xc6, 0xc7, 0xc8, 0xc9, 0xca, 0xcb, 0xcc, 0xcd, 0xce, 0xcf, 0xd0, 0xd1, 0xd2, 0xd3, 0xd4, 0};
+    oled_write_P(crkbd_logo, false);
+}
+
+bool oled_task_user(void) {
+    if (is_keyboard_master()) {
+        oled_render_layer_state();
+        oled_render_keylog();
+    } else {
+        oled_render_logo();
+    }
+    return false;
+}
+
 td_state_t cur_dance(qk_tap_dance_state_t *state) {
     if (state->count == 1) {
         if (state->interrupted || !state->pressed)
@@ -207,9 +272,9 @@ void ctlrp_finished(qk_tap_dance_state_t *state, void *user_data) {
             register_code16(KC_RPRN);
             break;
         case TD_SINGLE_HOLD:
-            register_mods(MOD_BIT(KC_RCTL)); // For a layer-tap key, use `layer_on(_MY_LAYER)` here
+            register_mods(MOD_BIT(KC_RCTL));
             break;
-        case TD_DOUBLE_SINGLE_TAP: // Allow nesting of 2 parens `((` within tapping term
+        case TD_DOUBLE_SINGLE_TAP:
             tap_code16(KC_RPRN);
             register_code16(KC_RPRN);
             break;
@@ -224,7 +289,7 @@ void ctlrp_reset(qk_tap_dance_state_t *state, void *user_data) {
             unregister_code16(KC_RPRN);
             break;
         case TD_SINGLE_HOLD:
-            unregister_mods(MOD_BIT(KC_RCTL)); // For a layer-tap key, use `layer_off(_MY_LAYER)` here
+            unregister_mods(MOD_BIT(KC_RCTL));
             break;
         case TD_DOUBLE_SINGLE_TAP:
             unregister_code16(KC_RPRN);
@@ -241,9 +306,9 @@ void sftrb_finished(qk_tap_dance_state_t *state, void *user_data) {
             register_code16(KC_RCBR);
             break;
         case TD_SINGLE_HOLD:
-            register_mods(MOD_BIT(KC_LSFT)); // For a layer-tap key, use `layer_on(_MY_LAYER)` here
+            register_mods(MOD_BIT(KC_LSFT));
             break;
-        case TD_DOUBLE_SINGLE_TAP: // Allow nesting of 2 parens `((` within tapping term
+        case TD_DOUBLE_SINGLE_TAP:
             tap_code16(KC_RCBR);
             register_code16(KC_RCBR);
             break;
@@ -258,7 +323,7 @@ void sftrb_reset(qk_tap_dance_state_t *state, void *user_data) {
             unregister_code16(KC_RCBR);
             break;
         case TD_SINGLE_HOLD:
-            unregister_mods(MOD_BIT(KC_LSFT)); // For a layer-tap key, use `layer_off(_MY_LAYER)` here
+            unregister_mods(MOD_BIT(KC_LSFT));
             break;
         case TD_DOUBLE_SINGLE_TAP:
             unregister_code16(KC_RCBR);
@@ -275,9 +340,9 @@ void ctllb_finished(qk_tap_dance_state_t *state, void *user_data) {
             register_code16(KC_LCBR);
             break;
         case TD_SINGLE_HOLD:
-            register_mods(MOD_BIT(KC_LCTL)); // For a layer-tap key, use `layer_on(_MY_LAYER)` here
+            register_mods(MOD_BIT(KC_LCTL));
             break;
-        case TD_DOUBLE_SINGLE_TAP: // Allow nesting of 2 parens `((` within tapping term
+        case TD_DOUBLE_SINGLE_TAP:
             tap_code16(KC_LCBR);
             register_code16(KC_LCBR);
             break;
@@ -292,7 +357,7 @@ void ctllb_reset(qk_tap_dance_state_t *state, void *user_data) {
             unregister_code16(KC_LCBR);
             break;
         case TD_SINGLE_HOLD:
-            unregister_mods(MOD_BIT(KC_LCTL)); // For a layer-tap key, use `layer_off(_MY_LAYER)` here
+            unregister_mods(MOD_BIT(KC_LCTL));
             break;
         case TD_DOUBLE_SINGLE_TAP:
             unregister_code16(KC_LCBR);
@@ -311,11 +376,14 @@ qk_tap_dance_action_t tap_dance_actions[] = {
 };
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
+    if (record->event.pressed) {
+        set_keylog(keycode, record);
+    }
     switch (keycode) {
         case KEYCODES_START:
             if (record->event.pressed) {
             }
-            return false; // Skip all further processing of this key
+            return false;
         case CTL_PGU:
             if (record->event.pressed) {
                 register_code(KC_LCTL);
